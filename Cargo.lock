@@ -16,7 +16,7 @@ dependencies = [
 [[package]]
 name = "cadence"
 version = "1.0.0"
-source = "git+https://github.com/Ironlight-Group/cadence.git?rev=7e27ab20fb0b1f7912d274bbd7e342c84cbf8dba#7e27ab20fb0b1f7912d274bbd7e342c84cbf8dba"
+source = "git+https://github.com/Ironlight-Group/cadence.git?rev=8f70b3ea37894d406cd06fa55eb1a63ba7a0db91#8f70b3ea37894d406cd06fa55eb1a63ba7a0db91"
 dependencies = [
  "crossbeam-channel",
 ]
