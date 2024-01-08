@@ -11,7 +11,7 @@
 //! let recorder = StatsdBuilder::from("127.0.0.1", 8125)
 //! .with_queue_size(5000)
 //! .with_buffer_size(1024)
-//! .build(Some("prefix"))
+//! .build(Some("prefix"), None)
 //! .expect("Could not create StatsdRecorder");
 //!
 //! metrics::set_boxed_recorder(Box::new(recorder));
@@ -101,7 +101,7 @@
 //! .with_queue_size(5000)
 //! .with_buffer_size(1024)
 //! .histogram_is_distribution()
-//! .build(Some("prefix"))
+//! .build(Some("prefix"), None)
 //! .expect("Could not create StatsdRecorder");
 //!
 //! metrics::set_boxed_recorder(Box::new(recorder));

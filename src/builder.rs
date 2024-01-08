@@ -133,14 +133,18 @@ impl StatsdBuilder {
     /// ```
     /// use metrics_exporter_statsd::StatsdBuilder;
     /// let recorder = StatsdBuilder::from("localhost", 8125)
-    ///                .build(Some("prefix"))
+    ///                .build(Some("prefix"), None)
     ///                .expect("Could not create StatsdRecorder");
     ///
     /// metrics::set_boxed_recorder(Box::new(recorder));
     /// metrics::counter!("counter.name",10);
     /// ```
-    /// will emit a counter metric name as `prefix.counter.name`
-    pub fn build(self, prefix: Option<&str>) -> Result<StatsdRecorder, StatsdError> {
+    /// will emit a counter metric name as `prefix.counter.name.suffix`
+    pub fn build(
+        self,
+        prefix: Option<&str>,
+        suffix: Option<&str>,
+    ) -> Result<StatsdRecorder, StatsdError> {
         self.is_valid()?;
         // create a local udp socket where the communication needs to happen, the port is set to
         // 0 so that we can pick any available port on the host. We also want this socket to be
@@ -168,6 +172,10 @@ impl StatsdBuilder {
         let mut builder = StatsdClient::builder(prefix.unwrap_or(""), sink);
         for (key, value) in self.default_tags {
             builder = builder.with_tag(key, value);
+        }
+
+        if let Some(suff) = suffix {
+            builder = builder.with_suffix(suff);
         }
 
         Ok(StatsdRecorder::new(builder.build(), self.default_histogram))
@@ -234,7 +242,7 @@ mod tests {
         pub fn new(prefix: Option<&str>) -> Self {
             let (server_socket, builder) = Environ::setup();
             let recorder = builder
-                .build(prefix)
+                .build(prefix, None)
                 .expect("test env should build a valid recorder");
             Environ {
                 server_socket,
@@ -246,7 +254,7 @@ mod tests {
             let (server_socket, builder) = Environ::setup();
             let recorder = builder
                 .histogram_is_distribution()
-                .build(None)
+                .build(None, None)
                 .expect("test env should build a valid recorder");
             Environ {
                 server_socket,
@@ -258,7 +266,7 @@ mod tests {
             let (server_socket, builder) = Environ::setup();
             let recorder = builder
                 .histogram_is_timer()
-                .build(None)
+                .build(None, None)
                 .expect("test env should build a valid recorder");
             Environ {
                 server_socket,
@@ -283,7 +291,7 @@ mod tests {
     #[should_panic]
     fn bad_host_name() {
         StatsdBuilder::from("", 10)
-            .build(None)
+            .build(None, None)
             .expect("this should panic");
     }
 
@@ -291,7 +299,7 @@ mod tests {
     #[should_panic]
     fn bad_port() {
         StatsdBuilder::from("127.0.0.1", 0)
-            .build(None)
+            .build(None, None)
             .expect("this should panic");
     }
 
@@ -483,7 +491,7 @@ mod tests {
         let recorder = builder
             .with_default_tag("app_name", "test")
             .with_default_tag("blackbird_cluster", "magenta")
-            .build(None)
+            .build(None, None)
             .expect("test env should build a valid recorder");
         let env = Environ {
             server_socket,

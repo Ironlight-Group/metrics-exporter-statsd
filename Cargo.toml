@@ -12,6 +12,6 @@ keywords = ["metrics", "statsd"]
 categories = ["observability", "operations"]
 
 [dependencies]
-cadence = "0.29"
+cadence = { git = "ssh://git@github.com/Ironlight-Group/cadence.git", rev = "7e27ab20fb0b1f7912d274bbd7e342c84cbf8dba" }
 metrics = "0.21"
 thiserror = "1.0"
